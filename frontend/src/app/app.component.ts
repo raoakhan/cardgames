@@ -13,6 +13,13 @@ import { MatIconModule } from '@angular/material/icon';
       <mat-toolbar color="primary">
         <span>Card Games</span>
         <span class="toolbar-spacer"></span>
+        <ng-container *ngIf="!(auth.currentUser$ | async); else loggedIn">
+          <button mat-button routerLink="/auth/login">Login</button>
+          <button mat-button routerLink="/auth/register">Register</button>
+        </ng-container>
+        <ng-template #loggedIn>
+          <button mat-button (click)="auth.logout()">Logout</button>
+        </ng-template>
         <button mat-icon-button aria-label="Toggle theme">
           <mat-icon>dark_mode</mat-icon>
         </button>

@@ -9,6 +9,8 @@ from .serializers import (
     RoomSerializer, PlayerSerializer, GameSessionSerializer, GameActionSerializer,
     CreateRoomSerializer, JoinRoomSerializer, RegisterSerializer, UserSerializer
 )
+from cardgames.ws_token_auth import ONLINE_USERS
+from rest_framework.decorators import action
 
 def generate_room_id(length=8):
     """Generate a random room ID."""
@@ -19,11 +21,27 @@ class RoomViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for game rooms."""
     queryset = Room.objects.filter(is_active=True)
     serializer_class = RoomSerializer
+    permission_classes = [permissions.AllowAny]
 
 class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for players."""
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=True, methods=['get'])
+    def stats(self, request, pk=None):
+        """Return win/loss statistics for a player."""
+        player = self.get_object()
+        total_games = GameSession.objects.filter(room__players=player).count()
+        wins = GameSession.objects.filter(room__players=player, is_complete=True, game_state__winner_id=player.id).count()
+        losses = total_games - wins
+        return Response({
+            'games_played': total_games,
+            'wins': wins,
+            'losses': losses,
+            'win_rate': round((wins / total_games) * 100, 2) if total_games else 0,
+        })
 
 class GameSessionViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for game sessions."""
@@ -39,6 +57,7 @@ class GameSessionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class CreateRoomView(APIView):
     """API endpoint to create a new game room."""
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
         serializer = CreateRoomSerializer(data=request.data)
@@ -75,6 +94,7 @@ class CreateRoomView(APIView):
 
 class JoinRoomView(APIView):
     """API endpoint to join an existing game room."""
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, room_id):
         try:
@@ -109,6 +129,28 @@ class JoinRoomView(APIView):
             return Response(PlayerSerializer(player).data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class MeView(APIView):
+    """Return current user's profile"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+
+class FriendsOnlineView(APIView):
+    """Return list of online friends for current user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if hasattr(user, 'friends'):
+            friend_ids = set(user.friends.values_list('id', flat=True))
+        else:
+            friend_ids = set()
+        online_friend_ids = [uid for uid in ONLINE_USERS if uid in friend_ids]
+        # Return minimal info: id and username
+        users = User.objects.filter(id__in=online_friend_ids)
+        return Response(UserSerializer(users, many=True).data)
 
 class RegisterView(APIView):
     """User registration endpoint"""

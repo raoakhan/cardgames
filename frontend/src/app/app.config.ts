@@ -4,12 +4,14 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { routes } from './app.routes';
+import { authInterceptorProvider } from './auth.interceptor'; // assuming the authInterceptorProvider is imported from auth.interceptor
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
-    importProvidersFrom(HttpClientModule)
+    importProvidersFrom(HttpClientModule),
+    authInterceptorProvider
   ]
 };
