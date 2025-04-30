@@ -49,3 +49,19 @@ class CreateRoomSerializer(serializers.Serializer):
 class JoinRoomSerializer(serializers.Serializer):
     player_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
     seat_position = serializers.IntegerField(min_value=0)
+
+# New serializer for user registration
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password']
+        )
+        return user

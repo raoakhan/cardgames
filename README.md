@@ -179,6 +179,27 @@ To ensure scalability, robustness, and maintainability, the following design pat
 ---
 
 ## Getting Started
+
+### Quick Start with Development Scripts
+
+We've created convenient development setup scripts to help you get started quickly:
+
+```bash
+# On Windows
+./dev-setup.ps1
+
+# On Linux/MacOS
+./dev-setup.sh
+```
+
+This script will:
+1. Check for required dependencies (Python, Node.js)
+2. Set up the backend virtual environment and install dependencies
+3. Set up the frontend and install npm packages
+4. Start both the Django backend and Angular frontend
+
+### Manual Setup
+
 1. Clone the repositories for both frontend (Angular) and backend (Django).
 2. **Backend Setup (Django):**
    ```bash
@@ -198,7 +219,28 @@ To ensure scalability, robustness, and maintainability, the following design pat
    ```
 4. **Run the Application:**
    - Start Django Backend (from `backend` directory): `python manage.py runserver`
-   - Start Angular Frontend (from `frontend` directory): `npm start` (Ensure Angular proxy is configured to talk to the backend API, or run backend on a different port).
+   - Start Angular Frontend (from `frontend` directory): `ng serve` (Ensure Angular proxy is configured to talk to the backend API)
+
+### Deployment
+
+We provide a Docker Compose setup for easy deployment:
+
+```bash
+# On Windows
+./deploy.ps1
+
+# On Linux/MacOS
+./deploy.sh
+```
+
+This creates a containerized environment with:
+- Django backend using Daphne (ASGI server)
+- Angular frontend served via Nginx
+- PostgreSQL database
+- Redis for WebSocket support
+- Nginx as a reverse proxy
+
+The application will be available at http://localhost after deployment.
 5. Access the app in your browser (typically `http://localhost:4200` for Angular).
 
 ## Testing

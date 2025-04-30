@@ -1,0 +1,80 @@
+<div 
+  class="floating-player" 
+  [ngClass]="{'minimized': isMinimized}"
+  [style.width.px]="width" 
+  [style.height.px]="height" 
+  [style.top.px]="posY" 
+  [style.left.px]="posX"
+  #floatingPlayer
+  cdkDrag
+  (cdkDragStarted)="onDragStarted()"
+  (cdkDragEnded)="onDragEnded($event)">
+  
+  <!-- Header -->
+  <div class="player-header" cdkDragHandle>
+    <div class="player-title">{{ title }}</div>
+    <div class="player-controls">
+      <button class="control-btn" (click)="toggleMinimize()">
+        <i class="material-icons">{{ isMinimized ? 'open_in_full' : 'minimize' }}</i>
+      </button>
+      <button class="control-btn" (click)="closePlayer()">
+        <i class="material-icons">close</i>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Content types selector -->
+  <div class="player-source" *ngIf="!isMinimized">
+    <select class="source-select" [(ngModel)]="contentType" (change)="onContentTypeChange()">
+      <option value="youtube">YouTube</option>
+      <option value="news">News</option>
+    </select>
+    
+    <div class="url-input" *ngIf="contentType === 'youtube'">
+      <input 
+        type="text" 
+        placeholder="Enter YouTube URL or ID"
+        [(ngModel)]="youtubeUrl"
+        (keyup.enter)="loadYouTubeContent()"
+      />
+      <button (click)="loadYouTubeContent()">Load</button>
+    </div>
+    
+    <div class="news-source" *ngIf="contentType === 'news'">
+      <select [(ngModel)]="newsSource" (change)="loadNewsContent()">
+        <option value="google-news">Google News</option>
+        <option value="bbc-news">BBC News</option>
+        <option value="cnn">CNN</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Content container -->
+  <div class="player-content" *ngIf="!isMinimized">
+    <!-- YouTube player -->
+    <div *ngIf="contentType === 'youtube'" class="youtube-container">
+      <div #youtubePlayer id="youtube-player"></div>
+    </div>
+    
+    <!-- News player -->
+    <div *ngIf="contentType === 'news'" class="news-container">
+      <iframe
+        [src]="newsUrl | safe: 'resourceUrl'"
+        frameborder="0"
+        allowfullscreen
+        *ngIf="newsUrl"
+      ></iframe>
+      <div class="loading-placeholder" *ngIf="!newsUrl">
+        Loading news...
+      </div>
+    </div>
+  </div>
+  
+  <!-- Resize handle -->
+  <div 
+    *ngIf="!isMinimized"
+    class="resize-handle"
+    (mousedown)="onResizeStart($event)">
+    <i class="material-icons">drag_handle</i>
+  </div>
+</div>

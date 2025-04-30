@@ -3,10 +3,11 @@ import string
 from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 from games.models import Room, Player, GameSession, GameAction
 from .serializers import (
     RoomSerializer, PlayerSerializer, GameSessionSerializer, GameActionSerializer,
-    CreateRoomSerializer, JoinRoomSerializer
+    CreateRoomSerializer, JoinRoomSerializer, RegisterSerializer, UserSerializer
 )
 
 def generate_room_id(length=8):
@@ -107,4 +108,15 @@ class JoinRoomView(APIView):
             
             return Response(PlayerSerializer(player).data, status=status.HTTP_201_CREATED)
         
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RegisterView(APIView):
+    """User registration endpoint"""
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

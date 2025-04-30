@@ -14,6 +14,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/game-room/game-room.component').then(m => m.GameRoomComponent)
   },
   {
+    path: 'games/hearts/:roomId',
+    loadComponent: () => import('./pages/games/hearts/hearts.component').then(m => m.HeartsComponent)
+  },
+  {
+    path: 'games/solitaire',
+    loadComponent: () => import('./pages/games/solitaire/solitaire.component').then(m => m.SolitaireComponent)
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full'
