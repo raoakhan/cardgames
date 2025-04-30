@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# Angular
+/frontend/node_modules
+/frontend/.angular
+/frontend/dist
+/frontend/tmp
+/frontend/.sass-cache
+/frontend/connect.lock
+/frontend/coverage
+/frontend/libpeerconnection.log
+/frontend/npm-debug.log
+/frontend/yarn-error.log
+/frontend/.idea
+/frontend/.project
+/frontend/.classpath
+/frontend/.c9/
+/frontend/*.launch
+/frontend/.settings/
+/frontend/*.sublime-workspace
+/frontend/.vscode/*
+
+# Environment variables
+.env
+.env.frontend
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+
+# System Files
+.DS_Store
+Thumbs.db
